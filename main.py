@@ -1,5 +1,6 @@
 import json
 import argparse
+import calendar
 from datetime import date
 
 
@@ -45,6 +46,12 @@ def main():
     # "LIST" COMMAND
     parser_delete = subparser.add_parser("list", help="View all expenses")
 
+    # "SUMMARY" COMMAND
+    parser_summary = subparser.add_parser(
+        "summary", help="Summary all the expenses amount")
+    parser_summary.add_argument("--month",type=int,required=False,help="Summary only month expenses")
+    
+
     # Check command in cli
     args = parser.parse_args()
 
@@ -57,6 +64,12 @@ def main():
         update_expense(args.id, args.description, args.amount)
     elif args.command == "list":
         view_expenses()
+    elif args.command == "summary":
+        if args.month == 0 or args.month:
+            sum_month_expenses(args.month)   
+        else:
+            sum_expenses()
+        
 
 
 # Add expense in dict with id,desc,amount,date in the json
@@ -129,6 +142,39 @@ def view_expenses():
                     expense["amount"],
                 )
             )
+
+
+# Sum all amount expenses
+def sum_expenses():
+    with open("expenses.json") as expenses:
+        data = json.load(expenses)
+        print(f"Total expenses: ${sum((expense["amount"] for expense in data))}")
+
+
+# Sum month amount expenses
+def sum_month_expenses(month):
+    # Check valid month
+    if month in range(1,13):
+        
+        # Get month from calendar
+        month_name = calendar.month_name[month]
+   
+         
+        with open("expenses.json") as expenses:
+            data = json.load(expenses)
+            dates_exp = (expense for expense in data if date.fromisoformat(expense["date"]).month == month)
+            
+            # Sum expenses
+            total_exp = sum(expense["amount"] for expense in dates_exp)
+            
+            if total_exp > 0:
+                print(f"Total expenses for {month_name}: ${total_exp}")
+            else:
+                print(f"No expenses in {month_name}!")
+    else:
+        print(f"{month} not is valid month!")
+ 
+            
 
 
 if __name__ == "__main__":

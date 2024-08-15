@@ -1,20 +1,32 @@
 [
     {
         "id": 1,
-        "description": "almacen",
+        "description": "almacen parte2",
         "amount": 3100,
-        "date": "2024-08-14"
-    },
-    {
-        "id": 2,
-        "description": "almacen a la ma\u00f1ana",
-        "amount": 5800,
-        "date": "2024-08-14"
+        "date": "2024-09-14"
     },
     {
         "id": 3,
         "description": "sube",
         "amount": 600,
         "date": "2024-08-14"
+    },
+    {
+        "id": 4,
+        "description": "sum all sum month",
+        "amount": 0,
+        "date": "2024-08-14"
+    },
+    {
+        "id": 5,
+        "description": "chipi puto",
+        "amount": 200,
+        "date": "2024-08-15"
+    },
+    {
+        "id": 5,
+        "description": "chipi puto",
+        "amount": 200,
+        "date": "2024-09-15"
     }
 ]
