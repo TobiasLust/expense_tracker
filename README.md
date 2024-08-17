@@ -1,4 +1,4 @@
-# Expense Tracker
+# Expense Tracker v1
 
 Expense Tracker is a command-line tool in Python that allows you to manage and track your expenses easily. You can add, delete, update, list, and export your expenses, as well as set a monthly budget and get a summary of your expenses.
 
