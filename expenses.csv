@@ -1,21 +1,2 @@
-id,description,amount,category,date
-1,Rent payment,1200,housing,2024-01-01
-2,Grocery shopping,200,groceries,2024-01-15
-3,Monthly metro pass,75,transportation,2024-02-03
-4,Doctor's appointment,150,healthcare,2024-02-10
-5,Concert tickets,100,entertainment,2024-03-05
-6,Savings deposit,500,savings,2024-03-20
-7,New shoes,80,clothing,2024-04-07
-8,Electricity bill,60,housing,2024-04-08
-9,Weekly groceries,150,groceries,2024-05-09
-10,Gasoline,40,transportation,2024-05-12
-11,Pharmacy purchase,30,healthcare,2024-06-11
-12,Movie night,50,entertainment,2024-06-14
-13,Emergency fund deposit,200,savings,2024-07-13
-14,New jacket,120,clothing,2024-07-21
-15,Water bill,30,housing,2024-08-15
-16,Dinner out,70,entertainment,2024-08-19
-17,Weekly groceries,170,groceries,2024-09-17
-18,Car maintenance,200,transportation,2024-09-18
-19,Gym membership,40,healthcare,2024-10-19
-20,Miscellaneous expenses,150,others,2024-10-20
+
+
