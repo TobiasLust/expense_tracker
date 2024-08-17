@@ -1,72 +1,73 @@
 # Expense Tracker
 
-Expense Tracker es una herramienta de línea de comandos en Python que permite gestionar y realizar un seguimiento de tus gastos de forma sencilla. Puedes agregar, eliminar, actualizar, listar y exportar tus gastos, además de establecer un presupuesto mensual y obtener un resumen de tus gastos.
+Expense Tracker is a command-line tool in Python that allows you to manage and track your expenses easily. You can add, delete, update, list, and export your expenses, as well as set a monthly budget and get a summary of your expenses.
 
-## Características
+## Features
 
-- **Agregar gastos**: Añade nuevos gastos con descripción, categoría, y monto.
-- **Eliminar gastos**: Elimina un gasto existente utilizando su ID.
-- **Actualizar gastos**: Actualiza la descripción, categoría o monto de un gasto existente.
-- **Listar gastos**: Muestra todos los gastos registrados, con la opción de filtrar por categoría.
-- **Resumen de gastos**: Muestra el resumen total de los gastos, con la opción de ver solo los gastos de un mes específico.
-- **Establecer presupuesto**: Configura un presupuesto mensual para controlar los gastos.
-- **Exportar a CSV**: Exporta todos los gastos a un archivo CSV.
+- **Add Expenses**: Add new expenses with description, category, and amount.
+- **Delete Expenses**: Remove an existing expense using its ID.
+- **Update Expenses**: Update the description, category, or amount of an existing expense.
+- **List Expenses**: Show all recorded expenses with an option to filter by category.
+- **Expense Summary**: Display the total summary of expenses with the option to view only expenses for a specific month.
+- **Set Budget**: Set a monthly budget to keep track of spending.
+- **Export to CSV**: Export all expenses to a CSV file.
 
-## Instalación
+## Installation
 
-1.Clona este repositorio en tu máquina local:
+1.Clone this repository to your local machine:
 
 ```bash
    git clone https://github.com/TobiasLust/expense_tracker.git
 ```
 
-2.Navega al directorio del proyecto:
+2.Navigate to the project directory:
 
 ```bash
     cd expense-tracker
 ```
 
-## Estructura del Proyecto
 
-expense_tracker.py: Contiene la lógica principal de la aplicación.
+## Project Structure 
 
-expenses.json: Archivo donde se almacenan los datos de los gastos. Like this:
+main.py: Contains the main logic of the application.
+
+expenses.json: File where expense data is stored. Like this:
 ![expenses.json](https://i.imgur.com/HzRhGtv.jpeg)
 
-budgets.json: Archivo donde se almacenan los presupuestos mensuales.
+budgets.json: File where monthly budgets are stored.
 
-When export CSV:
+When exporting to CSV:
 ![CSV](https://i.imgur.com/fTBEvK9.jpeg)
 
-## Uso
+## Usage
 
-Puedes usar la herramienta directamente desde la línea de comandos. Aquí hay algunos ejemplos de cómo usar cada comando:
+You can use the tool directly from the command line. Here are some examples of how to use each command:
 
 ```bash
-# Agregar un gasto
-python main.py add -d "Compra de supermercado" -c "groceries" -a 200
+# Add an expense
+python main.py add -d "Grocery shopping" -c "groceries" -a 200
 
-# Eliminar un gasto
+# Delete an expense
 python main.py delete --id 1
 
-# Actualizar un gasto
-python main.py update --id 1 -d "Compra semanal supermercado" -a 250
+# Update an expense
+python main.py update --id 1 -d "Weekly grocery shopping" -a 250
 
-# Listar todos los gastos
+# List all expenses
 python main.py list
 
-# Listar gastos por categoría
+# List expenses by category
 python main.py list -c "groceries"
 
-# Obtener un resumen de los gastos
+# Get a summary of expenses
 python main.py summary
 
-# Obtener un resumen de los gastos de un mes específico
+# Get a summary of expenses for a specific month
 python main.py summary --month 5
 
-# Establecer un presupuesto mensual
+# Set a monthly budget
 python main.py setbudget --month 5 -a 1000
 
-# Exportar los gastos a un archivo CSV
+# Export expenses to a CSV file
 python main.py export
 ```
