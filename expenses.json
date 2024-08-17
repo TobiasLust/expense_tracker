@@ -3,30 +3,63 @@
         "id": 1,
         "description": "almacen parte2",
         "amount": 3100,
-        "date": "2024-09-14"
+        "date": "2024-09-14",
+        "category": "Others"
     },
     {
         "id": 3,
         "description": "sube",
         "amount": 600,
-        "date": "2024-08-14"
+        "date": "2024-08-14",
+        "category": "Others"
     },
     {
         "id": 4,
         "description": "sum all sum month",
         "amount": 0,
-        "date": "2024-08-14"
+        "date": "2024-08-14",
+        "category": "Others"
     },
     {
         "id": 5,
         "description": "chipi puto",
         "amount": 200,
-        "date": "2024-08-15"
+        "date": "2024-08-15",
+        "category": "Others"
     },
     {
-        "id": 5,
+        "id": 10,
         "description": "chipi puto",
         "amount": 200,
-        "date": "2024-09-15"
+        "date": "2024-09-15",
+        "category": "Housing"
+    },
+    {
+        "id": 6,
+        "description": "test",
+        "amount": 200,
+        "date": "2024-08-16",
+        "category": "Others"
+    },
+    {
+        "id": 7,
+        "description": "test",
+        "amount": 200,
+        "date": "2024-08-16",
+        "category": "Clothing"
+    },
+    {
+        "id": 8,
+        "description": "tes2",
+        "category": "Others",
+        "amount": 300,
+        "date": "2024-08-16"
+    },
+    {
+        "id": 9,
+        "description": "tes2",
+        "category": "Housing",
+        "amount": 300,
+        "date": "2024-08-16"
     }
 ]

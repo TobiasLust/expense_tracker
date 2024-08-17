@@ -1,5 +1,3 @@
-from main import sum_month_expenses
+from main import view_expenses_cat
 
-user = int(input(""))
-
-sum_month_expenses(user)
+view_expenses_cat("Others")

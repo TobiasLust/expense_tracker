@@ -18,6 +18,15 @@ def main():
         help="Description of the expense",
     )
     parser_add.add_argument(
+        "-c",
+        "--category",
+        type=str,
+        required=False,
+        choices= ["housing","groceries","transportation","healthcare","entertainment","savings","clothing","others"],
+        default= "Others",
+        help="Category of expense",
+    )
+    parser_add.add_argument(
         "-a", "--amount", type=int, required=True, help="Amount of the expense"
     )
 
@@ -42,9 +51,22 @@ def main():
     parser_update.add_argument(
         "-a", "--amount", type=int, required=False, help="Amount of the expense"
     )
+    parser_update.add_argument(
+        "-c",
+        "--category",
+        type=str,
+        required=False,
+        choices= ["housing","groceries","transportation","healthcare","entertainment","savings","clothing","others"],
+        default= "Others",
+        help="Category of expense",
+    )
 
     # "LIST" COMMAND
-    parser_delete = subparser.add_parser("list", help="View all expenses")
+    parser_list = subparser.add_parser("list", help="View all expenses")
+    parser_list.add_argument(
+        "-c", "--category", type=str, required=False,choices= ["housing","groceries","transportation","healthcare","entertainment","savings","clothing","others"], help="Amount of the expense"
+    )
+    
 
     # "SUMMARY" COMMAND
     parser_summary = subparser.add_parser(
@@ -56,14 +78,17 @@ def main():
     args = parser.parse_args()
 
     if args.command == "add":
-        add_expense(args.description, args.amount)
+        add_expense(args.description, args.amount,args.category.strip())
         print("Expense added!")
     elif args.command == "delete":
         delete_expense(args.id)
     elif args.command == "update":
-        update_expense(args.id, args.description, args.amount)
+        update_expense(args.id, args.description, args.amount,args.category)
     elif args.command == "list":
-        view_expenses()
+        if args.category:
+            view_expenses_cat(args.category.strip())
+        else:
+            view_expenses()
     elif args.command == "summary":
         if args.month == 0 or args.month:
             sum_month_expenses(args.month)   
@@ -73,7 +98,7 @@ def main():
 
 
 # Add expense in dict with id,desc,amount,date in the json
-def add_expense(description, amount):
+def add_expense(description, amount,category):
 
     with open("expenses.json") as expenses:
         data = json.load(expenses)
@@ -81,10 +106,11 @@ def add_expense(description, amount):
     new_expense = {
         "id": len(data) + 1,
         "description": description.strip(),
+        "category": category.title(),
         "amount": amount,
         "date": date.today().strftime("%Y-%m-%d"),
     }
-
+    
     data.append(new_expense)
 
     with open("expenses.json", "w") as expenses:
@@ -108,7 +134,7 @@ def delete_expense(id: int):
 
 
 def update_expense(*args):
-    id, desc, amount = args
+    id, desc, amount,category = args
     with open("expenses.json", "r") as expenses:
         data = json.load(expenses)
 
@@ -118,6 +144,8 @@ def update_expense(*args):
                 expense["description"] = desc
             if amount is not None:
                 expense["amount"] = amount
+            if category is not None:
+                expense["category"] = category.title()
 
             with open("expenses.json", "w") as expenses:
                 json.dump(data, expenses, indent=4)
@@ -132,8 +160,26 @@ def view_expenses():
     with open("expenses.json") as expenses:
         data = json.load(expenses)
 
-        print("{:<4}{:<13}{:<20}{:<6}".format("ID", "Date", "Description", "Amount"))
+        print("{:<4}{:<13}{:<20}{:<10}{:<1}".format("ID", "Date", "Description", "Amount","Category"))
         for expense in data:
+            print(
+                "{:<4}{:<13}{:<20}${:<10}{:<1}".format(
+                    expense["id"],
+                    expense["date"],
+                    expense["description"],
+                    expense["amount"],
+                    expense["category"]
+                )
+            )
+
+def view_expenses_cat(category):
+    category = category.title()
+    with open("expenses.json") as expenses:
+        data = json.load(expenses)
+        expenses_cat = (expense for expense in data if expense["category"] == category)
+        print(f"{category} LIST:\n")
+        print("{:<4}{:<13}{:<20}{:<6}".format("ID", "Date", "Description", "Amount"))
+        for expense in expenses_cat:
             print(
                 "{:<4}{:<13}{:<20}${:<6}".format(
                     expense["id"],
@@ -142,7 +188,6 @@ def view_expenses():
                     expense["amount"],
                 )
             )
-
 
 # Sum all amount expenses
 def sum_expenses():
