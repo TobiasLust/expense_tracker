@@ -31,8 +31,12 @@ Expense Tracker es una herramienta de línea de comandos en Python que permite g
 expense_tracker.py: Contiene la lógica principal de la aplicación.
 
 expenses.json: Archivo donde se almacenan los datos de los gastos. Like this:
+![expenses.json](https://imgur.com/HzRhGtv)
 
 budgets.json: Archivo donde se almacenan los presupuestos mensuales.
+
+When export CSV:
+![CSV](https://imgur.com/fTBEvK9)
 
 ## Uso
 
