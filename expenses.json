@@ -1,3 +1,16 @@
 [
-    
+    {
+        "description": "super",
+        "category": "groceries",
+        "amount": 1150,
+        "date": "2024-08-23",
+        "id": 1
+    },
+    {
+        "description": "hojas",
+        "category": "others",
+        "amount": 199,
+        "date": "2024-08-23",
+        "id": 3
+    }
 ]

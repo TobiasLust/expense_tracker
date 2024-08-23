@@ -4,6 +4,9 @@ import calendar
 import csv
 from datetime import date
 
+EXPENSES_FILE = "expenses.json"
+BUDGETS_FILE = "budgets.json"
+
 
 def main():
     parser = argparse.ArgumentParser("Expense Tracker")
@@ -23,8 +26,17 @@ def main():
         "--category",
         type=str,
         required=False,
-        choices= ["housing","groceries","transportation","healthcare","entertainment","savings","clothing","others"],
-        default= "Others",
+        choices=[
+            "housing",
+            "groceries",
+            "transportation",
+            "healthcare",
+            "entertainment",
+            "savings",
+            "clothing",
+            "others",
+        ],
+        default="Others",
         help="Category of expense",
     )
     parser_add.add_argument(
@@ -57,28 +69,63 @@ def main():
         "--category",
         type=str,
         required=False,
-        choices= ["housing","groceries","transportation","healthcare","entertainment","savings","clothing","others"],
-        default= "Others",
+        choices=[
+            "housing",
+            "groceries",
+            "transportation",
+            "healthcare",
+            "entertainment",
+            "savings",
+            "clothing",
+            "others",
+        ],
+        default="Others",
         help="Category of expense",
     )
 
     # "LIST" COMMAND
     parser_list = subparser.add_parser("list", help="View all expenses")
     parser_list.add_argument(
-        "-c", "--category", type=str, required=False,choices= ["housing","groceries","transportation","healthcare","entertainment","savings","clothing","others"], help="Amount of the expense"
+        "-c",
+        "--category",
+        type=str,
+        required=False,
+        choices=[
+            "housing",
+            "groceries",
+            "transportation",
+            "healthcare",
+            "entertainment",
+            "savings",
+            "clothing",
+            "others",
+        ],
+        help="Amount of the expense",
     )
-    
 
     # "SUMMARY" COMMAND
     parser_summary = subparser.add_parser(
-        "summary", help="Summary all the expenses amount")
-    parser_summary.add_argument("--month",type=int,required=False,help="Summary only month expenses")
-    
+        "summary", help="Summary all the expenses amount"
+    )
+    parser_summary.add_argument(
+        "--month", type=int, required=False, help="Summary only month expenses"
+    )
+
     # "SET BUDGET" COMMAND
-    parser_setbudget = subparser.add_parser("setbudget",help="Set budget for month expenses")
-    parser_setbudget.add_argument("--month",type=int,choices=range(1,13),required=True,help="Month for set budget")
-    parser_setbudget.add_argument("-a","--amount",type=int,required=True,help="Amount for set budget")
-    
+    parser_setbudget = subparser.add_parser(
+        "setbudget", help="Set budget for month expenses"
+    )
+    parser_setbudget.add_argument(
+        "--month",
+        type=int,
+        choices=range(1, 13),
+        required=True,
+        help="Month for set budget",
+    )
+    parser_setbudget.add_argument(
+        "-a", "--amount", type=int, required=True, help="Amount for set budget"
+    )
+
     # "EXPORT" COMMAND
     parser_export = subparser.add_parser("export", help="Export expenses to csv")
 
@@ -86,192 +133,254 @@ def main():
     args = parser.parse_args()
 
     if args.command == "add":
-        add_expense(args.description, args.amount,args.category.strip())
-        print("Expense added!")
+
+        if check_amount(args.amount):
+            add_expense(create_expense(args.description, args.amount, args.category))
+            print("Expense added")
     elif args.command == "delete":
-        delete_expense(args.id)
+        if delete_expense(args.id):
+            print(f"Delete expense id:{args.id}")
+        else:
+            print(f"Expense id:{args.id} not exist")
+
     elif args.command == "update":
-        update_expense(args.id, args.description, args.amount,args.category)
+        if update_expense(args.id, args.description, args.amount, args.category):
+            print(f"Expense id:{args.id} updated")
+        else:
+            print(f"Expense not updated")
     elif args.command == "list":
         if args.category:
-            view_expenses_cat(args.category.strip())
+            view_expenses_cat(args.category)
         else:
             view_expenses()
     elif args.command == "summary":
         if args.month == 0 or args.month:
-            sum_month_expenses(args.month)   
+            if check_month(args.month):
+                month_name = calendar.month_name[args.month]
+                if sum_month_expenses(args.month):
+
+                    print(f"Total for {month_name}: ${sum_month_expenses(args.month)}")
+                else:
+                    print(f"Not expenses in {month_name}")
         else:
-            sum_expenses()
+            if not sum_expenses():
+                print("Not expense for sum")
+            else:
+                print(f"Total expenses: ${sum_expenses()}")
+
     elif args.command == "setbudget":
-        set_budget(args.month,args.amount)
+        if set_budget(args.month, args.amount):
+            print("Set budget")
     elif args.command == "export":
         export_csv()
-        
 
 
-# Add expense in dict with id,desc,amount,date in the json
-def add_expense(description, amount,category):
+# True or false if amount < 0
+def check_amount(amount: float):
     if amount < 0:
-        print("Amount it has to be more than 0")
+        print("Amount must be greater than 0")
+        return False
+    return True
 
-    with open("expenses.json") as expenses:
-        data = json.load(expenses)
 
-    new_expense = {
+# Create expense with desc amount cat
+def create_expense(description: str, amount: float, category: str):
+    if not check_amount(amount):
+        return False
+
+    return {
         "description": description.strip(),
-        "category": category.title(),
+        "category": category.strip(),
         "amount": amount,
         "date": date.today().strftime("%Y-%m-%d"),
     }
+
+
+def add_id(data: dict):
     if not data:
-        new_expense["id"] = 1
+        return 1
     else:
-        new_expense["id"] = data[len(data)-1]["id"] + 1
+        return data[len(data) - 1]["id"] + 1
+
+
+# Add expense in dict with id,desc,amount,date in the json
+def add_expense(expense: dict):
+    new_expense = expense
+    with open(EXPENSES_FILE) as expenses:
+        data = json.load(expenses)
+
+    # Create id
+    new_expense["id"] = add_id(data)
+    # Add expense
     data.append(new_expense)
 
-    with open("expenses.json", "w") as expenses:
+    with open(EXPENSES_FILE, "w") as expenses:
         json.dump(data, expenses, indent=4)
 
 
 # Delete expense by id
 def delete_expense(id: int):
-    with open("expenses.json") as expenses:
+    with open(EXPENSES_FILE) as expenses:
         data = json.load(expenses)
 
         for expense in data:
             if expense["id"] == id:
                 data.remove(expense)
-                with open("expenses.json", "w") as expenses:
+                with open(EXPENSES_FILE, "w") as expenses:
                     json.dump(data, expenses, indent=4)
-                    print("Expense delete!")
-                    return
+                    return True
 
-        print("ID not found")
+        return False
+
 
 # Update expenses by id
 def update_expense(*args):
-    id, desc, amount,category = args
-    if amount < 0:
-        print("Amount it has to be more than 0")
-        return
-    with open("expenses.json", "r") as expenses:
+    id, desc, amount, category = args
+
+    with open(EXPENSES_FILE, "r") as expenses:
         data = json.load(expenses)
 
     for expense in data:
         if expense["id"] == id:
             if desc is not None:
                 expense["description"] = desc
-            if amount is not None:
+            if amount is not None and check_amount(amount):
                 expense["amount"] = amount
+            else:
+                return False
             if category is not None:
-                expense["category"] = category.title()
+                expense["category"] = category.strip()
 
-            with open("expenses.json", "w") as expenses:
+            with open(EXPENSES_FILE, "w") as expenses:
                 json.dump(data, expenses, indent=4)
-            print("Expense Updated!")
-            return
+                return True
 
-    print("ID does not exist!")
+    return False
 
 
 # View list the all expenses in json
 def view_expenses():
-    with open("expenses.json") as expenses:
+    with open(EXPENSES_FILE) as expenses:
         data = json.load(expenses)
+        if data:
+            print(
+                "{:<4}{:<13}{:<20}{:<10}{:<1}".format(
+                    "ID", "Date", "Description", "Amount", "Category"
+                )
+            )
+            for expense in data:
+                print(
+                    "{:<4}{:<13}{:<20}${:<10}{:<1}".format(
+                        expense["id"],
+                        expense["date"],
+                        expense["description"],
+                        expense["amount"],
+                        expense["category"],
+                    )
+                )
+        else:
+            print("Not expenses in list")
 
-        print("{:<4}{:<13}{:<20}{:<10}{:<1}".format("ID", "Date", "Description", "Amount","Category"))
-        for expense in data:
-            print(
-                "{:<4}{:<13}{:<20}${:<10}{:<1}".format(
-                    expense["id"],
-                    expense["date"],
-                    expense["description"],
-                    expense["amount"],
-                    expense["category"]
-                )
-            )
+
 # View expenses categorys
-def view_expenses_cat(category):
-    category = category.title()
-    with open("expenses.json") as expenses:
+def view_expenses_cat(category: str):
+    with open(EXPENSES_FILE) as expenses:
         data = json.load(expenses)
-        expenses_cat = (expense for expense in data if expense["category"] == category)
-        print(f"{category} LIST:\n")
-        print("{:<4}{:<13}{:<20}{:<6}".format("ID", "Date", "Description", "Amount"))
-        for expense in expenses_cat:
+        expenses_cat = [expense for expense in data if expense["category"] == category]
+        if expenses_cat:
+            print(f"{category.title()} LIST:\n")
             print(
-                "{:<4}{:<13}{:<20}${:<6}".format(
-                    expense["id"],
-                    expense["date"],
-                    expense["description"],
-                    expense["amount"],
-                )
+                "{:<4}{:<13}{:<20}{:<6}".format("ID", "Date", "Description", "Amount")
             )
+            for expense in expenses_cat:
+                print(
+                    "{:<4}{:<13}{:<20}${:<6}".format(
+                        expense["id"],
+                        expense["date"],
+                        expense["description"],
+                        expense["amount"],
+                    )
+                )
+        else:
+            print(f"Not expenses in {category.title()}")
+
 
 # Sum all amount expenses
 def sum_expenses():
-    with open("expenses.json") as expenses:
+    with open(EXPENSES_FILE) as expenses:
         data = json.load(expenses)
-        print(f"Total expenses: ${sum((expense["amount"] for expense in data))}")
+        if data:
+            return sum((expense["amount"] for expense in data))
+        else:
+            return False
+
+
+def check_month(month: int):
+    if month not in range(1, 13):
+        print("Not is valid month")
+        return False
+    return month
 
 
 # Sum month amount expenses
-def sum_month_expenses(month):
-    # Check valid month
-    if month in range(1,13):
-        
-        # Get month from calendar
-        month_name = calendar.month_name[month]
-   
-         
-        with open("expenses.json") as expenses:
-            data = json.load(expenses)
-            dates_exp = (expense for expense in data if date.fromisoformat(expense["date"]).month == month)
-            
+def sum_month_expenses(month: int):
+    with open(EXPENSES_FILE) as expenses:
+        data = json.load(expenses)
+        dates_exp = (
+            expense
+            for expense in data
+            if date.fromisoformat(expense["date"]).month == month
+        )
+        if dates_exp:
+
             # Sum expenses
             total_exp = sum(expense["amount"] for expense in dates_exp)
-            
-            if total_exp > 0:
-                print(f"Total expenses for {month_name}: ${total_exp}")
-                check_budget(month,total_exp)
-            else:
-                print(f"No expenses in {month_name}!")
-    else:
-        print(f"{month} not is valid month!")
+            check_budget(month, total_exp)
+            return total_exp
 
-def set_budget(month:int,budget:int):
-    month = str(month)
-    with open("budgets.json") as budgets:
+    return False
+
+
+def set_budget(month: int, budget: int):
+    if budget > 0:
+
+        month = str(month)
+        with open(BUDGETS_FILE) as budgets:
             budgets_dict = json.load(budgets)
             budgets_dict[month] = budget
-            print("Budget added!")
-    with open("budgets.json","w") as budgets:
-        json.dump(budgets_dict,budgets,indent=4)
 
-def check_budget(month,summary):
+        with open(BUDGETS_FILE, "w") as budgets:
+            json.dump(budgets_dict, budgets, indent=4)
+            return True
+    else:
+        print("Budget must be greater than 0")
+        return False
+
+
+def check_budget(month: int, summary: float):
     month = str(month)
-    with open("budgets.json") as budgets:
+    with open(BUDGETS_FILE) as budgets:
         data = json.load(budgets)
-        if data[month] != 0 and  data[month] < summary:
+        if data[month] != 0 and data[month] < summary:
             print(f"You went over the limit this month by ${summary-data[month]}")
             print(f"Limit is: ${data[month]}")
 
- 
+
 def export_csv():
-    with open("expenses.json") as expenses:
-            data = json.load(expenses)
-            
+    with open(EXPENSES_FILE) as expenses:
+        data = json.load(expenses)
+
     if data:
-        with open("expenses.csv","w") as file:
-            fieldnames = ["id","description","amount","category","date"]
-            writer = csv.DictWriter(file,fieldnames=fieldnames)
+        with open("expenses.csv", "w") as file:
+            fieldnames = ["id", "description", "amount", "category", "date"]
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(data)
             print("Create expenses.csv!")
+            return True
     else:
-        print("Expenses empty!")
-        
-    
+        print("Not data for export")
+        return False
 
 
 if __name__ == "__main__":
